@@ -19,8 +19,16 @@
             max-width: 900px;
             margin: 60px auto;
             padding: 20px;
-            position: relative;
+            position: fixed;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
             z-index: 10;
+            perspective: 1000px;
+        }
+        .letter-wrapper {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
         }
         .letter {
             background: rgba(15, 20, 40, 0.85);
@@ -31,6 +39,20 @@
             line-height: 1.8;
             font-size: 1.1em;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            position: relative;
+            width: 850px;
+            min-height: 600px;
+        }
+        .glitter-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        .glitter-word {
+            position: absolute;
+            pointer-events: none;
         }
         .letter h1 {
             text-align: center;
@@ -38,9 +60,11 @@
             margin-bottom: 40px;
             color: #f4e8c1;
             text-shadow: 0 0 20px rgba(244, 232, 193, 0.5);
+            position: relative;
+            z-index: 1;
         }
-        .letter p { margin-bottom: 20px; text-align: justify; }
-        .signature { text-align: right; margin-top: 30px; font-style: italic; color: #bbb; }
+        .letter p { margin-bottom: 20px; text-align: justify; position: relative; z-index: 1; }
+        .signature { text-align: right; margin-top: 30px; font-style: italic; color: #bbb; position: relative; z-index: 1; }
         .music-btn {
             position: fixed; bottom: 30px; left: 30px;
             background: rgba(0, 150, 200, 0.3);
@@ -60,17 +84,20 @@
     <button class="music-btn" id="musicBtn">♪ Play Music</button>
     
     <div class="container">
-        <div class="letter">
-            <h1>A Letter to You</h1>
-            <p>Dear Friend,</p>
-            <p>I wanted to take a moment to tell you something that's been on my mind. Like atoms dancing in the cosmic void, like particles finding their way to form stars, you bring meaning and light to my world.</p>
-            <p>There's something truly beautiful about connections that don't demand explanation. They simply exist, quietly powerful, like the force of gravity itself binding the universe together. You are one of those rare connections for me.</p>
-            <p>I want you to know that you matter. Not because of what you do, not because of your accomplishments, but simply because of who you are. Every moment spent with you is a moment worth treasuring, worth remembering, worth holding close to my heart.</p>
-            <p>Like the moon reflects the sun's light, you reflect goodness into the lives of those around you. And even if you don't realize it, even if you think your presence doesn't change anything, I want you to know that it does. It changes everything for me.</p>
-            <p>So thank you. Thank you for being exactly who you are. Thank you for being part of my universe, for forming the constellation of my life. In a world of infinite possibilities, I'm grateful that our paths crossed.</p>
-            <div class="signature">
-                <p>With deep gratitude and warmth,</p>
-                <p>A Friend From the Universe</p>
+        <div class="letter-wrapper" id="letterWrapper">
+            <div class="letter">
+                <div class="glitter-overlay" id="glitterOverlay"></div>
+                <h1>A Letter to You</h1>
+                <p>Dear Friend,</p>
+                <p>I wanted to take a moment to tell you something that's been on my mind. Like atoms dancing in the cosmic void, like particles finding their way to form stars, you bring meaning and light to my world.</p>
+                <p>There's something truly beautiful about connections that don't demand explanation. They simply exist, quietly powerful, like the force of gravity itself binding the universe together. You are one of those rare connections for me.</p>
+                <p>I want you to know that you matter. Not because of what you do, not because of your accomplishments, but simply because of who you are. Every moment spent with you is a moment worth treasuring, worth remembering, worth holding close to my heart.</p>
+                <p>Like the moon reflects the sun's light, you reflect goodness into the lives of those around you. And even if you don't realize it, even if you think your presence doesn't change anything, I want you to know that it does. It changes everything for me.</p>
+                <p>So thank you. Thank you for being exactly who you are. Thank you for being part of my universe, for forming the constellation of my life. In a world of infinite possibilities, I'm grateful that our paths crossed.</p>
+                <div class="signature">
+                    <p>With deep gratitude and warmth,</p>
+                    <p>A Friend From the Universe</p>
+                </div>
             </div>
         </div>
     </div>
@@ -109,17 +136,18 @@
                 }
                 this.originalX = x;
                 this.originalY = y;
+                this.isGlitter = false;
             }
             
             update() {
-                if (isHovering) {
+                if (isHovering && !this.isGlitter) {
                     const dx = mouseX - this.x;
                     const dy = mouseY - this.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-                    const force = 100 / (distance + 1);
-                    this.vx -= (dx / distance) * force * 0.3;
-                    this.vy -= (dy / distance) * force * 0.3;
-                } else {
+                    const force = 50 / (distance + 1);
+                    this.vx -= (dx / distance) * force * 0.1;
+                    this.vy -= (dy / distance) * force * 0.1;
+                } else if (!this.isGlitter) {
                     const returnX = this.originalX - this.x;
                     const returnY = this.originalY - this.y;
                     this.vx += returnX * 0.01;
@@ -156,6 +184,7 @@
         }
         
         const particles = [];
+        const glitterParticles = [];
         
         for (let i = 0; i < 40; i++) {
             particles.push(new Particle(
@@ -180,16 +209,55 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
             isHovering = true;
+            
+            // Tilt card based on mouse position
+            const letterWrapper = document.getElementById('letterWrapper');
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const rotateX = (mouseY - centerY) * 0.02;
+            const rotateY = (centerX - mouseX) * 0.02;
+            letterWrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         });
         
         document.addEventListener('mouseleave', () => {
             isHovering = false;
+            const letterWrapper = document.getElementById('letterWrapper');
+            letterWrapper.style.transform = 'rotateX(0) rotateY(0)';
         });
         
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
+        
+        function createGlitterWord() {
+            const overlay = document.getElementById('glitterOverlay');
+            const word = words[Math.floor(Math.random() * words.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const size = Math.random() * 12 + 8;
+            const x = Math.random() * 850;
+            const y = Math.random() * 600;
+            
+            const glitterEl = document.createElement('div');
+            glitterEl.className = 'glitter-word';
+            glitterEl.textContent = word;
+            glitterEl.style.left = x + 'px';
+            glitterEl.style.top = y + 'px';
+            glitterEl.style.fontSize = size + 'px';
+            glitterEl.style.color = color;
+            glitterEl.style.fontFamily = 'Georgia';
+            glitterEl.style.fontWeight = 'bold';
+            glitterEl.style.opacity = '0.7';
+            
+            overlay.appendChild(glitterEl);
+        }
+        
+        // Create glitter words periodically
+        for (let i = 0; i < 20; i++) {
+            setTimeout(() => createGlitterWord(), i * 200);
+        }
+        
+        setInterval(() => createGlitterWord(), 1000);
         
         function animate() {
             ctx.fillStyle = 'rgba(0, 26, 77, 0.1)';
@@ -220,7 +288,7 @@
         });
         
         animate();
-        console.log('✨ Interactive Universe loaded - Move your mouse to interact!');
+        console.log('✨ Interactive Universe with 3D Card Tilt loaded!');
     </script>
 </body>
 </html>
