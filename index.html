@@ -58,6 +58,7 @@
             font-weight: bold;
             text-shadow: 0 0 15px rgba(244, 232, 193, 0.8);
             pointer-events: none;
+            white-space: nowrap;
         }
 
         @keyframes textAppear {
@@ -86,6 +87,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(244, 232, 193, 0.1);
             line-height: 1.9;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
         .letter h1 {
@@ -94,6 +96,15 @@
             margin-bottom: 30px;
             text-align: center;
             letter-spacing: 2px;
+            font-weight: 300;
+            min-height: 50px;
+        }
+
+        .letter .greeting {
+            font-size: 1.2em;
+            color: #f4e8c1;
+            margin-bottom: 30px;
+            font-weight: 300;
         }
 
         .letter p {
@@ -122,64 +133,128 @@
             cursor: pointer;
             z-index: 1000;
             backdrop-filter: blur(10px);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            font-family: 'Georgia', serif;
         }
 
         .music-btn:hover {
             background: rgba(26, 26, 46, 0.95);
             box-shadow: 0 0 20px rgba(244, 232, 193, 0.2);
+            transform: scale(1.05);
+        }
+
+        .music-btn:active {
+            transform: scale(0.95);
         }
 
         @media (max-width: 768px) {
             .letter {
                 padding: 30px;
             }
+
             .letter h1 {
                 font-size: 1.5em;
             }
+
+            .letter p {
+                font-size: 1em;
+            }
+
+            .container {
+                padding: 60px 20px;
+            }
+
+            .music-btn {
+                top: 20px;
+                left: 20px;
+                padding: 10px 16px;
+                font-size: 0.85em;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .letter {
+            animation: fadeIn 1s ease-in forwards;
         }
     </style>
 </head>
 <body>
     <div class="universe" id="universe"></div>
 
-    <button class="music-btn" id="musicBtn">🎵 Play</button>
-    <audio id="bgMusic" loop>
+    <button class="music-btn" id="musicBtn">🎵 Play Music</button>
+    
+    <audio id="bgMusic" loop preload="none">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
     <div class="container">
         <div class="letter">
-            <h1>A Letter to You</h1>
-            <p>Dear friend,</p>
-            <p>I wanted to tell you something that's been on my mind. Like atoms forming stars, like particles dancing in the cosmic void, you bring meaning to my world.</p>
-            <p>There's something beautiful about connections that don't demand explanation. They just exist, quietly powerful, like gravity itself.</p>
-            <p>I hope you know that you matter. Not because of what you do, but because of who you are. Every moment with you is a moment worth remembering.</p>
-            <p>Thank you for being part of my universe.</p>
-            <p class="closing">With gratitude,<br>A Friend</p>
+            <h1 id="title">A Letter to You</h1>
+            <p class="greeting" id="greeting">Dear Friend,</p>
+            
+            <p id="para1">
+                I wanted to take a moment to tell you something that's been on my mind. 
+                Like atoms dancing in the cosmic void, like particles finding their way to form stars, 
+                you bring meaning and light to my world.
+            </p>
+
+            <p id="para2">
+                There's something truly beautiful about connections that don't demand explanation. 
+                They simply exist, quietly powerful, like the force of gravity itself binding the universe together. 
+                You are one of those rare connections for me.
+            </p>
+
+            <p id="para3">
+                I want you to know that you matter. Not because of what you do, not because of your accomplishments, 
+                but simply because of who you are. Every moment spent with you is a moment worth treasuring, 
+                worth remembering, worth holding close to my heart.
+            </p>
+
+            <p id="para4">
+                Like the moon reflects the sun's light, you reflect goodness into the lives of those around you. 
+                And even if you don't realize it, even if you think your presence doesn't change anything, 
+                I want you to know that it does. It changes everything for me.
+            </p>
+
+            <p id="para5">
+                So thank you. Thank you for being exactly who you are. Thank you for being part of my universe, 
+                for forming the constellation of my life. In a world of infinite possibilities, 
+                I'm grateful that our paths crossed.
+            </p>
+
+            <p class="closing" id="closing">
+                With deep gratitude and warmth,<br>
+                A Friend From the Universe
+            </p>
         </div>
     </div>
 
     <script>
-        // Create cosmic atoms that form a moon
         const universe = document.getElementById('universe');
         const musicBtn = document.getElementById('musicBtn');
         const bgMusic = document.getElementById('bgMusic');
         let isPlaying = false;
 
-        // Moon center position
         const moonX = window.innerWidth * 0.85;
         const moonY = window.innerHeight * 0.2;
         const moonRadius = 80;
 
-        // Create 200+ atoms forming the moon
         function createAtoms() {
             const atomCount = 250;
+            
             for (let i = 0; i < atomCount; i++) {
                 const atom = document.createElement('div');
                 atom.className = 'atom';
                 
-                // Distribute atoms in a spherical pattern
                 const angle = Math.random() * Math.PI * 2;
                 const distance = Math.random() * moonRadius;
                 const depth = (Math.random() - 0.5) * 2;
@@ -188,11 +263,14 @@
                 const y = moonY + Math.sin(angle) * distance * 0.8;
                 
                 const size = Math.random() * 8 + 3;
+                
                 atom.style.width = size + 'px';
                 atom.style.height = size + 'px';
                 atom.style.left = x + 'px';
                 atom.style.top = y + 'px';
-                atom.style.animation = `atomOrbit ${1 + Math.random() * 2}s ease-out forwards`;
+                
+                const duration = 1 + Math.random() * 2;
+                atom.style.animation = `atomOrbit ${duration}s ease-out forwards`;
                 atom.style.animationDelay = (i * 0.01) + 's';
                 atom.style.zIndex = Math.floor(depth * 100);
                 
@@ -200,7 +278,6 @@
             }
         }
 
-        // Create text fragments that appear from atoms
         function createTextFragments() {
             const fragments = [
                 '✨ Beautiful',
@@ -210,7 +287,9 @@
                 '🌟 Eternal',
                 '💎 Precious',
                 '🌙 Silent',
-                '✨ Real'
+                '✨ Real',
+                '🔮 Magic',
+                '⭐ Boundless'
             ];
             
             fragments.forEach((text, index) => {
@@ -233,21 +312,31 @@
             });
         }
 
-        // Music control
         musicBtn.addEventListener('click', () => {
             if (isPlaying) {
                 bgMusic.pause();
-                musicBtn.textContent = '🎵 Play';
+                musicBtn.textContent = '🎵 Play Music';
+                isPlaying = false;
             } else {
-                bgMusic.play();
-                musicBtn.textContent = '⏸ Pause';
+                bgMusic.play().catch(err => {
+                    console.log('Audio play failed:', err);
+                });
+                musicBtn.textContent = '⏸ Pause Music';
+                isPlaying = true;
             }
-            isPlaying = !isPlaying;
         });
 
-        // Initialize
+        window.addEventListener('resize', () => {
+            const newMoonX = window.innerWidth * 0.85;
+            const newMoonY = window.innerHeight * 0.2;
+        });
+
         createAtoms();
         createTextFragments();
+
+        console.log('🌌 Letter to You - Cosmic Edition Loaded!');
+        console.log('Moon formed by', 250, 'atoms');
+        console.log('Ready to send love across the universe!');
     </script>
 </body>
 </html>
