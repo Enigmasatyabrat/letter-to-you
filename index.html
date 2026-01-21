@@ -20,8 +20,8 @@
             position: relative;
         }
 
-        /* Chaotic background layers */
-        .background-chaos {
+        /* Simple starfield background */
+        .stars-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -42,79 +42,9 @@
             animation: twinkle 3s infinite;
         }
 
-        .dot {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            background: rgba(244, 232, 193, 0.4);
-            border-radius: 50%;
-        }
-
-        .word {
-            position: absolute;
-            font-size: 12px;
-            color: rgba(244, 232, 193, 0.15);
-            font-family: 'Georgia', serif;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
         @keyframes twinkle {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.3; }
-        }
-
-        .universe {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .atom {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(244, 232, 193, 0.9), rgba(244, 232, 193, 0.2));
-        }
-
-        @keyframes atomOrbit {
-            0% {
-                opacity: 0;
-                transform: scale(0);
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes textAppear {
-            0% {
-                opacity: 0;
-                transform: scale(0) rotate(0deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(360deg);
-            }
-        }
-
-        .text-fragment {
-            position: absolute;
-            color: #f4e8c1;
-            font-size: 0.9em;
-            font-weight: bold;
-            text-shadow: 0 0 15px rgba(244, 232, 193, 0.8);
-            pointer-events: none;
-            white-space: nowrap;
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
 
         .container {
@@ -126,13 +56,14 @@
         }
 
         .letter {
-            background: rgba(15, 20, 40, 0.7);
+            background: rgba(15, 20, 40, 0.8);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(244, 232, 193, 0.2);
             border-radius: 10px;
             padding: 50px;
             line-height: 1.8;
             font-size: 1.1em;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .letter h1 {
@@ -140,6 +71,7 @@
             font-size: 2.5em;
             margin-bottom: 40px;
             color: #f4e8c1;
+            text-shadow: 0 0 20px rgba(244, 232, 193, 0.3);
         }
 
         .letter p {
@@ -166,7 +98,7 @@
             cursor: pointer;
             font-size: 0.95em;
             z-index: 20;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .music-btn:hover {
@@ -186,12 +118,16 @@
             margin: 10px 0;
             opacity: 0.7;
             cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
-    <div class="background-chaos" id="chaos"></div>
-    <div class="universe" id="universe"></div>
+    <div class="stars-container" id="starsContainer"></div>
     
     <button class="music-btn" id="musicBtn">♪ Play Music</button>
     
@@ -228,88 +164,21 @@
     </audio>
 
     <script>
-        // Create chaotic starfield background
-        function createChaoticBackground() {
-            const chaos = document.getElementById('chaos');
-            const words = [
-                'love', 'light', 'stars', 'hope', 'dream', 'soul', 'heart', 'cosmic',
-                'infinite', 'eternity', 'grace', 'wonder', 'magic', 'universe', 'you',
-                'gratitude', 'joy', 'peace', 'shine', 'glow', 'celestial', 'divine'
-            ];
+        // Generate simple starfield
+        function createStarfield() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 200; // Reduced from 500
 
-            // Create random stars
-            for (let i = 0; i < 500; i++) {
+            for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.width = (Math.random() * 2 + 1) + 'px';
+                star.style.width = (Math.random() * 1.5 + 0.5) + 'px';
                 star.style.height = star.style.width;
                 star.style.animationDelay = (Math.random() * 3) + 's';
                 star.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                chaos.appendChild(star);
-            }
-
-            // Create random dots
-            for (let i = 0; i < 800; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                dot.style.left = Math.random() * 100 + '%';
-                dot.style.top = Math.random() * 100 + '%';
-                dot.style.opacity = Math.random() * 0.6 + 0.1;
-                chaos.appendChild(dot);
-            }
-
-            // Create floating words
-            for (let i = 0; i < 150; i++) {
-                const wordElement = document.createElement('div');
-                wordElement.className = 'word';
-                wordElement.textContent = words[Math.floor(Math.random() * words.length)];
-                wordElement.style.left = Math.random() * 100 + '%';
-                wordElement.style.top = Math.random() * 100 + '%';
-                wordElement.style.fontSize = (Math.random() * 12 + 8) + 'px';
-                wordElement.style.opacity = Math.random() * 0.4 + 0.1;
-                wordElement.style.transform = 'rotate(' + (Math.random() * 360) + 'deg)';
-                chaos.appendChild(wordElement);
-            }
-        }
-
-        // Create cosmic atoms
-        function createAtoms() {
-            const universe = document.getElementById('universe');
-            const count = 250;
-            for (let index = 0; index < count; index++) {
-                const atom = document.createElement('div');
-                atom.className = 'atom';
-                atom.style.left = Math.random() * 100 + '%';
-                atom.style.top = Math.random() * 100 + '%';
-                atom.style.width = (Math.random() * 30 + 10) + 'px';
-                atom.style.height = atom.style.width;
-                atom.style.animation = `atomOrbit ${Math.random() * 1 + 1.5}s ease-out forwards`;
-                atom.style.animationDelay = (Math.random() * 1.5 + index * 300 / 1500) + 's';
-                universe.appendChild(atom);
-            }
-        }
-
-        // Create text fragments
-        function createTextFragments() {
-            const universe = document.getElementById('universe');
-            const textElements = [
-                'You matter', 'You are loved', 'You shine', 'You inspire',
-                'You are magic', 'You are enough', 'You are valued', 'You are unique'
-            ];
-            
-            for (let i = 0; i < 60; i++) {
-                const frag = document.createElement('div');
-                frag.className = 'text-fragment';
-                frag.textContent = textElements[i % textElements.length];
-                frag.style.left = Math.random() * 100 + '%';
-                frag.style.top = Math.random() * 100 + '%';
-                frag.style.fontSize = (Math.random() * 14 + 10) + 'px';
-                frag.style.color = `rgba(244, 232, 193, ${Math.random() * 0.5 + 0.3})`;
-                frag.style.animation = `textAppear ${Math.random() * 2 + 2}s ease-out forwards`;
-                frag.style.animationDelay = (Math.random() * 1500 + i * 300 / 60) + 'ms';
-                universe.appendChild(frag);
+                container.appendChild(star);
             }
         }
 
@@ -332,66 +201,9 @@
             }
         });
 
-        // Responsive sizing
-        window.addEventListener('resize', () => {
-            const newMoonX = window.innerWidth * 0.85;
-            const newMoonY = window.innerHeight * 0.2;
-        });
-
-
-                // Mouse tracking for parallax effect
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-
-            // Move all stars
-            const stars = document.querySelectorAll('.star');
-            stars.forEach(star => {
-                const rect = star.getBoundingClientRect();
-                const distX = (mouseX - rect.left) * 0.05;
-                const distY = (mouseY - rect.top) * 0.05;
-                star.style.transform = `translate(${distX}px, ${distY}px)`;
-            });
-
-            // Move all dots
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach(dot => {
-                const rect = dot.getBoundingClientRect();
-                const distX = (mouseX - rect.left) * 0.03;
-                const distY = (mouseY - rect.top) * 0.03;
-                dot.style.transform = `translate(${distX}px, ${distY}px)`;
-            });
-
-            // Move all words
-            const words = document.querySelectorAll('.word');
-            words.forEach(word => {
-                const rect = word.getBoundingClientRect();
-                const distX = (mouseX - rect.left) * 0.02;
-                const distY = (mouseY - rect.top) * 0.02;
-                word.style.transform = `translate(${distX}px, ${distY}px) rotate(' + (Math.atan2(distY, distX) * 180 / Math.PI) + 'deg)`;
-            });
-
-            // Move all atoms
-            const atoms = document.querySelectorAll('.atom');
-            atoms.forEach(atom => {
-                const rect = atom.getBoundingClientRect();
-                const distX = (mouseX - rect.left) * 0.01;
-                const distY = (mouseY - rect.top) * 0.01;
-                atom.style.transform = `translate(${distX}px, ${distY}px) scale(1)`;
-            });
-        });
-
-        // Initialize on page load
-        createAtoms();
-        createTextFragments();
-        createChaoticBackground();
-
-        console.log('🌠 Letter to You - Cosmic Edition loaded!');
-        console.log('Moon formed by', 250, 'atoms');
-        console.log('Ready to send love across the universe!');
+        // Initialize
+        createStarfield();
+        console.log('✨ A Letter to You - Starfield Edition loaded!');
     </script>
 </body>
 </html>
