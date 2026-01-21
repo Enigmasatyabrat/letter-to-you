@@ -30,265 +30,269 @@
             transform-style: preserve-3d;
             transition: transform 0.1s ease-out;
         }
-        .letter {
-            background: rgba(15, 20, 40, 0.85);
+        .letter-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid rgba(100, 200, 255, 0.3);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(244, 232, 193, 0.2);
-            border-radius: 10px;
-            padding: 50px;
-            line-height: 1.8;
-            font-size: 1.1em;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            min-height: 500px;
             position: relative;
-            width: 850px;
-            min-height: 600px;
-        }
-        .glitter-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
             overflow: hidden;
-            border-radius: 10px;
-            pointer-events: none;
         }
-        .glitter-word {
+        .letter-card h1 {
+            text-align: center;
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            color: #e8d4a2;
+            text-shadow: 0 4px 20px rgba(232, 212, 162, 0.3);
+        }
+        .letter-content {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #d0d0d0;
+            text-align: left;
+            min-height: 300px;
+        }
+        .letter-content p {
+            margin-bottom: 1.5em;
+        }
+        /* Typewriter effect */
+        .typing-text {
+            opacity: 1;
+            animation: none;
+        }
+        /* Glitter falling effect */
+        .glitter {
             position: absolute;
             pointer-events: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: glitterFall linear forwards;
         }
-        .letter h1 {
-            text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 40px;
-            color: #f4e8c1;
-            text-shadow: 0 0 20px rgba(244, 232, 193, 0.5);
-            position: relative;
-            z-index: 1;
+        @keyframes glitterFall {
+            0% {
+                transform: translateY(-100vh) translateX(0) rotateZ(0deg);
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(var(--card-bottom)) translateX(var(--offset-x)) rotateZ(360deg);
+                opacity: 0.8;
+            }
         }
-        .letter p { margin-bottom: 20px; text-align: justify; position: relative; z-index: 1; }
-        .signature { text-align: right; margin-top: 30px; font-style: italic; color: #bbb; position: relative; z-index: 1; }
-        .music-btn {
-            position: fixed; bottom: 30px; left: 30px;
-            background: rgba(0, 150, 200, 0.3);
-            border: 2px solid rgba(0, 180, 255, 0.6);
-            color: #f4e8c1; padding: 12px 20px; border-radius: 25px;
-            cursor: pointer; font-size: 0.95em; z-index: 20;
+        .music-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #00bcd4 0%, #00897b 100%);
+            border: 2px solid #00bcd4;
+            border-radius: 30px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            z-index: 20;
             transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 188, 212, 0.5);
         }
-        .music-btn:hover {
-            background: rgba(0, 150, 200, 0.5);
-            box-shadow: 0 0 20px rgba(0, 180, 255, 0.4);
+        .music-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 188, 212, 0.8);
         }
     </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
-    <button class="music-btn" id="musicBtn">♪ Play Music</button>
     
     <div class="container">
         <div class="letter-wrapper" id="letterWrapper">
-            <div class="letter">
-                <div class="glitter-overlay" id="glitterOverlay"></div>
+            <div class="letter-card" id="letterCard">
                 <h1>A Letter to You</h1>
-                <p>Dear Friend,</p>
-                <p>I wanted to take a moment to tell you something that's been on my mind. Like atoms dancing in the cosmic void, like particles finding their way to form stars, you bring meaning and light to my world.</p>
-                <p>There's something truly beautiful about connections that don't demand explanation. They simply exist, quietly powerful, like the force of gravity itself binding the universe together. You are one of those rare connections for me.</p>
-                <p>I want you to know that you matter. Not because of what you do, not because of your accomplishments, but simply because of who you are. Every moment spent with you is a moment worth treasuring, worth remembering, worth holding close to my heart.</p>
-                <p>Like the moon reflects the sun's light, you reflect goodness into the lives of those around you. And even if you don't realize it, even if you think your presence doesn't change anything, I want you to know that it does. It changes everything for me.</p>
-                <p>So thank you. Thank you for being exactly who you are. Thank you for being part of my universe, for forming the constellation of my life. In a world of infinite possibilities, I'm grateful that our paths crossed.</p>
-                <div class="signature">
-                    <p>With deep gratitude and warmth,</p>
-                    <p>A Friend From the Universe</p>
-                </div>
+                <div class="letter-content" id="letterContent"></div>
             </div>
         </div>
     </div>
 
-    <audio id="bgMusic" loop>
-        <source src="https://assets.mixkit.co/active_storage/sfx/2744/2744-preview.mp3" type="audio/mpeg">
-    </audio>
+    <button class="music-button" id="musicBtn">♫ Play Music</button>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        let mouseX = canvas.width / 2;
-        let mouseY = canvas.height / 2;
-        let isHovering = false;
-        
-        const words = ['love', 'hope', 'grace', 'peace', 'light', 'soul', 'dream', 'eternal', 'magic', 'wonder', 'infinite', 'cosmic', 'divine', 'sacred', 'pure'];
-        const colors = ['#FF6B6B', '#FFA500', '#FFD93D', '#6BCF7F', '#4ECDC4', '#45B7D1', '#FF69B4', '#9D84B7', '#FFB347', '#87CEEB'];
-        
-        class Particle {
-            constructor(x, y, vx = 0, vy = 0, type = 'word') {
-                this.x = x;
-                this.y = y;
-                this.vx = vx;
-                this.vy = vy;
-                this.type = type;
-                if (type === 'word') {
-                    this.word = words[Math.floor(Math.random() * words.length)];
-                    this.size = Math.random() * 12 + 8;
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                } else {
-                    this.size = Math.random() * 2 + 1;
-                    this.color = '#ffffff';
-                }
-                this.originalX = x;
-                this.originalY = y;
-                this.isGlitter = false;
-            }
-            
-            update() {
-                if (isHovering && !this.isGlitter) {
-                    const dx = mouseX - this.x;
-                    const dy = mouseY - this.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const force = 50 / (distance + 1);
-                    this.vx -= (dx / distance) * force * 0.1;
-                    this.vy -= (dy / distance) * force * 0.1;
-                } else if (!this.isGlitter) {
-                    const returnX = this.originalX - this.x;
-                    const returnY = this.originalY - this.y;
-                    this.vx += returnX * 0.01;
-                    this.vy += returnY * 0.01;
-                }
-                
-                this.vy += 0.15;
-                this.vx *= 0.98;
-                this.vy *= 0.98;
-                this.x += this.vx;
-                this.y += this.vy;
-                
-                if (this.y > canvas.height + 50) this.y = -50;
-                if (this.x > canvas.width + 50) this.x = -50;
-                if (this.x < -50) this.x = canvas.width + 50;
-            }
-            
-            draw() {
-                if (this.type === 'word') {
-                    ctx.font = `${this.size}px Georgia`;
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = 0.7;
-                    ctx.fillText(this.word, this.x, this.y);
-                    ctx.globalAlpha = 1;
-                } else {
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = 0.6;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                }
-            }
-        }
-        
-        const particles = [];
-        const glitterParticles = [];
-        
-        for (let i = 0; i < 40; i++) {
-            particles.push(new Particle(
-                Math.random() * canvas.width,
-                Math.random() * canvas.height,
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 2,
-                'word'
-            ));
-        }
-        
-        for (let i = 0; i < 100; i++) {
-            particles.push(new Particle(
-                Math.random() * canvas.width,
-                Math.random() * canvas.height,
-                0, 0,
-                'dot'
-            ));
-        }
-        
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            isHovering = true;
-            
-            // Tilt card based on mouse position
-            const letterWrapper = document.getElementById('letterWrapper');
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            const rotateX = (mouseY - centerY) * 0.02;
-            const rotateY = (centerX - mouseX) * 0.02;
-            letterWrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-        
-        document.addEventListener('mouseleave', () => {
-            isHovering = false;
-            const letterWrapper = document.getElementById('letterWrapper');
-            letterWrapper.style.transform = 'rotateX(0) rotateY(0)';
-        });
-        
-        window.addEventListener('resize', () => {
+        const letterContent = document.getElementById('letterContent');
+        const letterWrapper = document.getElementById('letterWrapper');
+        const letterCard = document.getElementById('letterCard');
+        const musicBtn = document.getElementById('musicBtn');
+
+        // Full letter text
+        const letterText = `Dear Friend,
+
+I wanted to take a moment to tell you something that's been on my mind. Like atoms dancing in the cosmic void, like particles finding their way to form stars, you bring meaning and light to my world.
+
+There's something truly beautiful about connections that don't demand explanation. They simply exist, quietly powerful, like the force of gravity itself binding the universe together. You are one of those rare connections for me.
+
+I want you to know that you matter. Not because of what you do, not because of your accomplishments, but simply because of who you are. Every moment spent with you is a moment worth treasuring, worth remembering, worth holding close to my heart.
+
+Like the moon reflects the sun's light, you reflect goodness into the lives of those around you. And even if you don't realize it, even if you think your presence doesn't change anything, I want you to know that it does. It changes everything for me.
+
+So thank you. Thank you for being exactly who you are. Thank you for being part of my universe, for forming the constellation of my life. In a world of infinite possibilities, I'm grateful that our paths crossed.
+
+With deep gratitude and warmth,
+
+A Friend From the Universe`;
+
+        const glitterWords = ['sacred', 'dream', 'peace', 'love', 'wonder', 'magic', 'eternal', 'hope', 'divine', 'cosmic', 'infinite', 'grace', 'light', 'soul', 'pure'];
+        const colors = ['#FFD700', '#FF69B4', '#87CEEB', '#98FF98', '#FFB347', '#DDA0DD', '#87CEEB', '#F0E68C', '#FFA07A', '#98FB98', '#87CEFA', '#DDA0DD', '#FFB6C1', '#B0E0E6', '#F0E68C'];
+
+        // Canvas setup
+        function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-        });
-        
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Typewriter effect
+        let charIndex = 0;
+        function typeWriter() {
+            if (charIndex < letterText.length) {
+                const char = letterText[charIndex];
+                if (char === '\n') {
+                    letterContent.innerHTML += '<br>';
+                } else {
+                    letterContent.innerHTML += char;
+                }
+                charIndex++;
+                setTimeout(typeWriter, 40);
+
+                // Create glitter word every 15 characters
+                if (charIndex % 15 === 0 && charIndex > 0) {
+                    createGlitterWord();
+                }
+            } else {
+                // Start falling words after text is done
+                setTimeout(() => {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => createGlitterWord(), i * 300);
+                    }
+                }, 500);
+            }
+        }
+
+        // Create glitter words that fall to card
         function createGlitterWord() {
-            const overlay = document.getElementById('glitterOverlay');
-            const word = words[Math.floor(Math.random() * words.length)];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            const size = Math.random() * 12 + 8;
-            const x = Math.random() * 850;
-            const y = Math.random() * 600;
+            const word = glitterWords[Math.floor(Math.random() * glitterWords.length)];
+            const color = colors[glitterWords.indexOf(word)];
             
-            const glitterEl = document.createElement('div');
-            glitterEl.className = 'glitter-word';
-            glitterEl.textContent = word;
-            glitterEl.style.left = x + 'px';
-            glitterEl.style.top = y + 'px';
-            glitterEl.style.fontSize = size + 'px';
-            glitterEl.style.color = color;
-            glitterEl.style.fontFamily = 'Georgia';
-            glitterEl.style.fontWeight = 'bold';
-            glitterEl.style.opacity = '0.7';
+            const glitter = document.createElement('div');
+            glitter.className = 'glitter';
+            glitter.textContent = word;
+            glitter.style.color = color;
+            glitter.style.left = Math.random() * window.innerWidth + 'px';
+            glitter.style.top = '-50px';
+            glitter.style.position = 'fixed';
+            glitter.style.zIndex = '5';
             
-            overlay.appendChild(glitterEl);
+            // Calculate card position for glitter to land
+            const cardRect = letterCard.getBoundingClientRect();
+            const cardCenterX = cardRect.left + cardRect.width / 2;
+            const targetX = cardCenterX + (Math.random() - 0.5) * cardRect.width * 0.8;
+            const offsetX = targetX - (Math.random() * window.innerWidth);
+            
+            glitter.style.setProperty('--card-bottom', (window.innerHeight - cardRect.bottom - 50) + 'px');
+            glitter.style.setProperty('--offset-x', offsetX + 'px');
+            glitter.style.animationDuration = (3 + Math.random() * 2) + 's';
+            
+            document.body.appendChild(glitter);
+            
+            setTimeout(() => glitter.remove(), 5000);
         }
-        
-        // Create glitter words periodically
-        for (let i = 0; i < 20; i++) {
-            setTimeout(() => createGlitterWord(), i * 200);
+
+        // Mouse interaction for 3D card tilt
+        document.addEventListener('mousemove', (e) => {
+            const rect = letterCard.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const rotateX = (e.clientY - centerY) * 0.02;
+            const rotateY = (e.clientX - centerX) * -0.02;
+            
+            letterWrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            letterWrapper.style.transform = 'rotateX(0) rotateY(0)';
+        });
+
+        // Background particles
+        const particles = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.7 + 0.3;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(100, 200, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
-        
-        setInterval(() => createGlitterWord(), 1000);
-        
+
+        // Initialize particles
+        for (let i = 0; i < 50; i++) {
+            particles.push(new Particle());
+        }
+
         function animate() {
-            ctx.fillStyle = 'rgba(0, 26, 77, 0.1)';
+            ctx.fillStyle = 'rgba(0, 8, 20, 0.1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             particles.forEach(particle => {
                 particle.update();
                 particle.draw();
             });
-            
+
             requestAnimationFrame(animate);
         }
-        
-        const musicBtn = document.getElementById('musicBtn');
-        const bgMusic = document.getElementById('bgMusic');
-        let isPlaying = false;
-        
+        animate();
+
+        // Music control
+        const bgMusic = new Audio();
+        bgMusic.src = 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==';
+        bgMusic.loop = true;
+        bgMusic.volume = 0.3;
+
         musicBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                bgMusic.pause();
-                musicBtn.textContent = '♪ Play Music';
-                isPlaying = false;
-            } else {
-                bgMusic.play().catch(err => console.log('Audio play failed:', err));
+            if (bgMusic.paused) {
+                bgMusic.play().catch(e => console.log('Audio play failed:', e));
                 musicBtn.textContent = '⏸ Pause Music';
-                isPlaying = true;
+            } else {
+                bgMusic.pause();
+                musicBtn.textContent = '♫ Play Music';
             }
         });
-        
-        animate();
-        console.log('✨ Interactive Universe with 3D Card Tilt loaded!');
+
+        // Start typewriter when page loads
+        window.addEventListener('load', () => {
+            setTimeout(typeWriter, 500);
+        });
+
+        console.log('✨ Interactive Universe - Letter Falls, Glitter Sticks Professionally!');
     </script>
 </body>
 </html>
