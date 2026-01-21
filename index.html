@@ -338,6 +338,52 @@
             const newMoonY = window.innerHeight * 0.2;
         });
 
+
+                // Mouse tracking for parallax effect
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // Move all stars
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                const rect = star.getBoundingClientRect();
+                const distX = (mouseX - rect.left) * 0.05;
+                const distY = (mouseY - rect.top) * 0.05;
+                star.style.transform = `translate(${distX}px, ${distY}px)`;
+            });
+
+            // Move all dots
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach(dot => {
+                const rect = dot.getBoundingClientRect();
+                const distX = (mouseX - rect.left) * 0.03;
+                const distY = (mouseY - rect.top) * 0.03;
+                dot.style.transform = `translate(${distX}px, ${distY}px)`;
+            });
+
+            // Move all words
+            const words = document.querySelectorAll('.word');
+            words.forEach(word => {
+                const rect = word.getBoundingClientRect();
+                const distX = (mouseX - rect.left) * 0.02;
+                const distY = (mouseY - rect.top) * 0.02;
+                word.style.transform = `translate(${distX}px, ${distY}px) rotate(' + (Math.atan2(distY, distX) * 180 / Math.PI) + 'deg)`;
+            });
+
+            // Move all atoms
+            const atoms = document.querySelectorAll('.atom');
+            atoms.forEach(atom => {
+                const rect = atom.getBoundingClientRect();
+                const distX = (mouseX - rect.left) * 0.01;
+                const distY = (mouseY - rect.top) * 0.01;
+                atom.style.transform = `translate(${distX}px, ${distY}px) scale(1)`;
+            });
+        });
+
         // Initialize on page load
         createAtoms();
         createTextFragments();
