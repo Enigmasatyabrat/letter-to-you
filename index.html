@@ -1,310 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Letter to You - Interactive Universe</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Georgia', serif;
-            background: radial-gradient(ellipse at center, #001a4d 0%, #000814 100%);
-            color: #e8e8e8;
-            min-height: 100vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-            position: relative;
-        }
-        #canvas { 
-            display: block; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            z-index: 1;
-            pointer-events: none;
-        }
-        .container {
-            max-width: 900px;
-            margin: 60px auto;
-            padding: 20px;
-            position: relative;
-            z-index: 10;
-            perspective: 1000px;
-        }
-        .letter-wrapper {
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-        }
-        .letter-card {
-            background: rgba(15, 23, 42, 0.95);
-            border: 2px solid rgba(100, 200, 255, 0.3);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            min-height: 500px;
-            position: relative;
-            overflow: hidden;
-        }
-        .letter-card h1 {
-            text-align: center;
-            font-size: 3.5em;
-            margin-bottom: 30px;
-            color: #e8d4a2;
-            text-shadow: 0 4px 20px rgba(232, 212, 162, 0.3);
-        }
-        .letter-content {
-            font-size: 1.1em;
-            line-height: 1.8;
-            color: #d0d0d0;
-            text-align: left;
-            min-height: 300px;
-        }
-        .letter-content p {
-            margin-bottom: 1.5em;
-        }
-        .music-button {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, #00bcd4 0%, #00897b 100%);
-            border: 2px solid #00bcd4;
-            border-radius: 30px;
-            color: white;
-            font-size: 1em;
-            cursor: pointer;
-            z-index: 20;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px rgba(0, 188, 212, 0.5);
-        }
-        .music-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(0, 188, 212, 0.8);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Letter to You - Interactive Universe</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Georgia', serif;
+    background: radial-gradient(ellipse at center, #001a4d 0%, #000814 100%);
+    color: #e8e8e8;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#canvas {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.container {
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+    perspective: 1000px;
+}
+
+.letter-wrapper {
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+}
+
+.letter-card {
+    background: rgba(15, 23, 42, 0.95);
+    border: 2px solid rgba(100, 200, 255, 0.3);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    min-height: 500px;
+}
+
+.letter-card h1 {
+    text-align: center;
+    font-size: 3.5em;
+    margin-bottom: 30px;
+    color: #e8d4a2;
+}
+
+.letter-content {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #d0d0d0;
+    min-height: 300px;
+}
+
+.music-button {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    padding: 12px 25px;
+    border-radius: 30px;
+    border: none;
+    background: #00bcd4;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    z-index: 20;
+}
+</style>
 </head>
+
 <body>
-    <canvas id="canvas"></canvas>
-    
-    <div class="container">
-        <div class="letter-wrapper" id="letterWrapper">
-            <div class="letter-card" id="letterCard">
-                <h1>A Letter to You</h1>
-                <div class="letter-content" id="letterContent"></div>
-            </div>
-        </div>
+
+<canvas id="canvas"></canvas>
+
+<div class="container">
+  <div class="letter-wrapper" id="letterWrapper">
+    <div class="letter-card" id="letterCard">
+      <h1>A Letter to You</h1>
+      <div class="letter-content" id="letterContent"></div>
     </div>
+  </div>
+</div>
 
-    <button class="music-button" id="musicBtn">♫ Play Music</button>
+<button class="music-button" id="musicBtn">♫ Play Music</button>
 
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const letterContent = document.getElementById('letterContent');
-        const letterWrapper = document.getElementById('letterWrapper');
-        const letterCard = document.getElementById('letterCard');
-        const musicBtn = document.getElementById('musicBtn');
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const letterContent = document.getElementById('letterContent');
+const letterWrapper = document.getElementById('letterWrapper');
+const letterCard = document.getElementById('letterCard');
+const musicBtn = document.getElementById('musicBtn');
 
-        // Full letter text
-        const letterText = `Dear Friend,
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-I wanted to take a moment to tell you something that's been on my mind. Like atoms dancing in the cosmic void, like particles finding their way to form stars, you bring meaning and light to my world.
+// ===== TEXT =====
+const letterText = `Dear Friend,
 
-There's something truly beautiful about connections that don't demand explanation. They simply exist, quietly powerful, like the force of gravity itself binding the universe together. You are one of those rare connections for me.
+I wanted to take a moment to tell you something that's been on my mind.
+Like atoms dancing in the cosmic void, you bring meaning and light to my world.
 
-I want you to know that you matter. Not because of what you do, not because of your accomplishments, but simply because of who you are. Every moment spent with you is a moment worth treasuring, worth remembering, worth holding close to my heart.
+There’s something beautiful about connections that don’t demand explanation.
+You are one of those rare connections for me.
 
-Like the moon reflects the sun's light, you reflect goodness into the lives of those around you. And even if you don't realize it, even if you think your presence doesn't change anything, I want you to know that it does. It changes everything for me.
-
-So thank you. Thank you for being exactly who you are. Thank you for being part of my universe, for forming the constellation of my life. In a world of infinite possibilities, I'm grateful that our paths crossed.
-
-With deep gratitude and warmth,
-
+With warmth,
 A Friend From the Universe`;
 
-        const glitterWords = ['sacred', 'dream', 'peace', 'love', 'wonder', 'magic', 'eternal', 'hope', 'divine', 'cosmic', 'infinite', 'grace', 'light', 'soul', 'pure'];
-        const colors = ['#FFD700', '#FF69B4', '#87CEEB', '#98FF98', '#FFB347', '#DDA0DD', '#87CEEB', '#F0E68C', '#FFA07A', '#98FB98', '#87CEFA', '#DDA0DD', '#FFB6C1', '#B0E0E6', '#F0E68C'];
+const glitterWords = [
+ 'sacred','dream','peace','love','wonder','magic',
+ 'eternal','hope','divine','cosmic','infinite',
+ 'grace','light','soul','pure'
+];
 
-        // Canvas setup
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
+const colors = [
+ '#FFD700','#FF69B4','#87CEEB','#98FF98','#FFB347',
+ '#DDA0DD','#87CEEB','#F0E68C','#FFA07A','#98FB98',
+ '#87CEFA','#DDA0DD','#FFB6C1','#B0E0E6','#F0E68C'
+];
 
-        // Gravity-based word particles
-        class WordParticle {
-            constructor(x, y, word, color) {
-                this.x = x;
-                this.y = y;
-                this.word = word;
-                this.color = color;
-                this.vx = (Math.random() - 0.5) * 4;
-                this.vy = (Math.random() - 0.5) * 4;
-                this.size = 14;
-                this.alpha = 1;
-                this.originalX = x;
-                this.originalY = y;
-            }
+// ===== PARTICLE CLASS =====
+class WordParticle {
+  constructor(x, y, word, color) {
+    this.x = x;
+    this.y = y;
+    this.word = word;
+    this.color = color;
 
-            update(mouseX, mouseY) {
-                // Gravity towards bottom
-                this.vy += 0.1;
-                
-                // Repel from mouse
-                const dx = this.x - mouseX;
-                const dy = this.y - mouseY;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const maxDistance = 150;
-                
-                if (distance < maxDistance && distance > 0) {
-                    const force = (1 - distance / maxDistance) * 0.3;
-                    this.vx += (dx / distance) * force;
-                    this.vy += (dy / distance) * force;
-                }
-                
-                // Apply damping
-                this.vx *= 0.98;
-                this.vy *= 0.98;
-                
-                // Update position
-                this.x += this.vx;
-                this.y += this.vy;
-                
-                // Bounce off edges
-                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-                
-                // Keep in bounds
-                this.x = Math.max(0, Math.min(canvas.width, this.x));
-                this.y = Math.max(0, Math.min(canvas.height, this.y));
-            }
+    this.vx = (Math.random() - 0.5) * 2;
+    this.vy = Math.random() * 2 + 1; // always falling
+    this.size = 16;
+  }
 
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = this.alpha * 0.7;
-                ctx.font = `bold ${this.size}px Georgia`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.shadowColor = `${this.color}`;
-                ctx.shadowBlur = 10;
-                ctx.fillText(this.word, this.x, this.y);
-                ctx.globalAlpha = 1;
-            }
-        }
+  update(mouseX, mouseY) {
+    const GRAVITY = 0.4;
+    this.vy += GRAVITY;
 
-        const particles = [];
+    // Mouse repulsion
+    const dx = this.x - mouseX;
+    const dy = this.y - mouseY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const maxDist = 160;
 
-        // Typewriter effect
-        let charIndex = 0;
-        function typeWriter() {
-            if (charIndex < letterText.length) {
-                const char = letterText[charIndex];
-                if (char === '\n') {
-                    letterContent.innerHTML += '<br>';
-                } else {
-                    letterContent.innerHTML += char;
-                }
-                charIndex++;
-                setTimeout(typeWriter, 40);
+    if (dist < maxDist && dist > 0) {
+      const force = (1 - dist / maxDist) * 0.5;
+      this.vx += (dx / dist) * force;
+      this.vy += (dy / dist) * force;
+    }
 
-                // Create gravity word every 20 characters
-                if (charIndex % 20 === 0 && charIndex > 0 && particles.length < 40) {
-                    createGravityWord();
-                }
-            } else {
-                // Continue adding words after text is done
-                const addMoreWords = setInterval(() => {
-                    if (particles.length < 50) {
-                        createGravityWord();
-                    } else {
-                        clearInterval(addMoreWords);
-                    }
-                }, 300);
-            }
-        }
+    // Light damping
+    this.vx *= 0.995;
+    this.vy *= 0.995;
 
-        // Create gravity word
-        function createGravityWord() {
-            const word = glitterWords[Math.floor(Math.random() * glitterWords.length)];
-            const colorIdx = glitterWords.indexOf(word);
-            const color = colors[colorIdx];
-            
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height * 0.3; // Start from top
-            
-            particles.push(new WordParticle(x, y, word, color));
-        }
+    // Move
+    this.x += this.vx;
+    this.y += this.vy;
 
-        // Mouse tracking
-        let mouseX = canvas.width / 2;
-        let mouseY = canvas.height / 2;
-        
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // 3D card tilt
-            const rect = letterCard.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            const rotateX = (e.clientY - centerY) * 0.02;
-            const rotateY = (e.clientX - centerX) * -0.02;
-            
-            letterWrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
+    // Floor bounce
+    if (this.y > canvas.height - 10) {
+      this.y = canvas.height - 10;
+      this.vy *= -0.55;
+      this.vx *= 0.85;
+    }
 
-        document.addEventListener('mouseleave', () => {
-            letterWrapper.style.transform = 'rotateX(0) rotateY(0)';
-        });
+    // Wall bounce
+    if (this.x < 0 || this.x > canvas.width) {
+      this.vx *= -0.6;
+    }
+  }
 
-        // Animation loop
-        function animate() {
-            // Fade background
-            ctx.fillStyle = 'rgba(0, 8, 20, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.font = `bold ${this.size}px Georgia`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(this.word, this.x, this.y);
+  }
+}
 
-            // Update and draw particles
-            for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update(mouseX, mouseY);
-                particles[i].draw();
-            }
+const particles = [];
 
-            ctx.shadowColor = 'transparent';
-            requestAnimationFrame(animate);
-        }
-        animate();
+// ===== TYPEWRITER =====
+let charIndex = 0;
 
-        // Music control
-        const bgMusic = new Audio();
-        bgMusic.src = 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==';
-        bgMusic.loop = true;
-        bgMusic.volume = 0.3;
+function typeWriter() {
+  if (charIndex < letterText.length) {
+    const char = letterText[charIndex];
+    letterContent.innerHTML += (char === '\n') ? '<br>' : char;
+    charIndex++;
 
-        musicBtn.addEventListener('click', () => {
-            if (bgMusic.paused) {
-                bgMusic.play().catch(e => console.log('Audio play failed:', e));
-                musicBtn.textContent = '⏸ Pause Music';
-            } else {
-                bgMusic.pause();
-                musicBtn.textContent = '♫ Play Music';
-            }
-        });
+    if (charIndex % 20 === 0 && particles.length < 50) {
+      createGravityWord();
+    }
 
-        // Start typewriter when page loads
-        window.addEventListener('load', () => {
-            setTimeout(typeWriter, 500);
-            // Create initial words
-            for (let i = 0; i < 8; i++) {
-                setTimeout(() => createGravityWord(), i * 200);
-            }
-        });
+    setTimeout(typeWriter, 40);
+  }
+}
 
-        console.log('✨ Interactive Universe - Gravity + Typewriter Effect!');
-    </script>
+// ===== SPAWN WORD =====
+function createGravityWord() {
+  const word = glitterWords[Math.floor(Math.random() * glitterWords.length)];
+  const color = colors[glitterWords.indexOf(word)];
+  const x = Math.random() * canvas.width;
+  const y = -20 - Math.random() * 120; // spawn above screen
+  particles.push(new WordParticle(x, y, word, color));
+}
+
+// ===== MOUSE + TILT =====
+let mouseX = canvas.width / 2;
+let mouseY = canvas.height / 2;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  const rect = letterCard.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+
+  const rx = (e.clientY - cy) * 0.02;
+  const ry = (e.clientX - cx) * -0.02;
+
+  letterWrapper.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+});
+
+// ===== ANIMATION LOOP =====
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.update(mouseX, mouseY);
+    p.draw();
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+// ===== MUSIC =====
+const bgMusic = new Audio();
+bgMusic.loop = true;
+bgMusic.volume = 0.3;
+
+musicBtn.addEventListener('click', () => {
+  if (bgMusic.paused) {
+    bgMusic.play();
+    musicBtn.textContent = '⏸ Pause Music';
+  } else {
+    bgMusic.pause();
+    musicBtn.textContent = '♫ Play Music';
+  }
+});
+
+// ===== START =====
+window.addEventListener('load', () => {
+  setTimeout(typeWriter, 500);
+  for (let i = 0; i < 10; i++) {
+    setTimeout(createGravityWord, i * 250);
+  }
+});
+</script>
+
 </body>
 </html>
